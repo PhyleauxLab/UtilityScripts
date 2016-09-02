@@ -9,7 +9,7 @@ drawBase <- function()
 		else if (ranNum <= 1.0) { return(rgb(1,1,0,alpha=1)) }
 	}
 
-ntax <- 1
+ntax <- 4
 nsites <- 20
 
 quartz(width=10,height=4)
