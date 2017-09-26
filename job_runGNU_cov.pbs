@@ -1,0 +1,31 @@
+#!/bin/bash
+#PBS -q bigmem
+#PBS -l nodes=1:ppn=16
+#PBS -l walltime=1:00:00
+#PBS -N numTips_Aug3_cov
+#PBS -o $PBS_JOBNAME.out
+#PBS -e $PBS_JOBNAME.err
+#PBS -A hpc_phyleaux09
+
+runName="numTips"
+date="Aug3"
+
+WDIR="/work/gmount/TreeScaper/$runName"
+cd $WDIR
+
+# Workers per node
+WPN=16
+
+# File list to pipe into task file
+FILES="$WDIR/nexTrees_$runName.txt"
+
+# File with one line task
+TASK="$WDIR/pythonTask_cov_$runName.sh"
+
+# Set up parallel call
+# set log file, pass workers, whatever nodefile is, and working directory
+PARALLEL="parallel --joblog $runName_$date_cov.log -j $WPN --slf $PBS_NODEFILE --wd $WDIR"
+
+# Now call parallel and pass files and task. 
+# This call with the {/} cuts the path off of the .nex file from the $FILES file
+$PARALLEL -a $FILES sh $TASK {/} 
