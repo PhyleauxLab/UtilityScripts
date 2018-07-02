@@ -1,0 +1,33 @@
+#!/bin/bash
+#PBS -q workq
+#PBS -l nodes=4:ppn=16
+#PBS -l walltime=72:00:00
+#PBS -N log_tacocat
+#PBS -o $PBS_JOBNAME.out
+#PBS -e $PBS_JOBNAME.err
+#PBS -A hpc_phyleaux10
+
+## Set working directory
+
+WDIR=$PBS_O_WORKDIR
+
+## Move into working directory
+
+cd $WDIR
+
+## Set number of jobs per node
+
+export JOBS_PER_NODE=1
+
+## Make list of files to pass to your mpi program
+
+ls $WDIR/scripts/emp_analysis_* > files.txt
+
+## Parallel command flags: jobs per node, pbs node file, working directory, and file to write gnu output to
+PARALLEL="parallel -j $JOBS_PER_NODE --slf $PBS_NODEFILE --wd $WDIR --joblog log_tacocat.gnu"
+
+## Pass job to run to parallel command. Job here is "mpirun -np 16 rb-mpi"
+## The job itself is mpi(on top of gnu parallel), so we pass the number of processors per mpi job to mpirun. 
+## files.txt contains the files that you want to pass to your mpi program. 
+
+$PARALLEL -a files.txt mpirun -np 16 rb-mpi {}
